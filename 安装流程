@@ -1,0 +1,106 @@
+【1】安装opencv320 或者opencv346 我试了 都可以。
+     3.4.6下载地址：https://sourceforge.net/projects/opencvlibrary/files/3.4.6/opencv-3.4.6-vc14_vc15.exe/download
+     3.2.0版本太旧 自己找
+【2】安装好opencv后 将 E:\opencv346\opencv\build\bin  加入系统环境变量path中 重启。
+ 
+ -----------------------安装好了opencv---开始安装YOLO3--------
+
+【1】 github上下载YOLO3 项目  https://github.com/AlexeyAB/darknet 项目主页。
+      win下打开git bash。 cd e:/hxgit ,git https://github.com/AlexeyAB/darknet.git。比较慢的话上你懂得，
+      速度只有20KB/s ，换了代li就好几百KB/s。
+     git config --global https.proxy http://127.0.0.1:XXXXX
+     git config --global https.proxy https://127.0.0.1:XXXXX
+     端口号在【lantern】【设置-高级设置页面】看  分为http和sock两种 别弄错
+    # 取消代理
+   git config --global --unset http.proxy
+   git config --global --unset https.proxy
+
+【2】下载完成后打开E:\hxgit\yolo3\darknet\build\darknet文件夹下的darknet.vcxproj  这是GPU版本 还有no GPU版本 自己选合适的。 
+     有UltraEdit打开 把里面CUDA 10.0改成自己的CUDA版本 我的是CUDA 8.0
+     分别是
+     55行 <Import Project="$(VCTargetsPath)\BuildCustomizations\CUDA 8.0.props" />
+     301行  <Import Project="$(VCTargetsPath)\BuildCustomizations\CUDA 8.0.targets" />
+     计算能力修改 见参考值 根据网站提供的信息 https://github.com/tpruvot/ccminer/wiki/Compatibility 修改成对应显卡的值。
+     
+     107行 <CodeGeneration>compute_30,sm_30;compute_52,sm_52</CodeGeneration>  改成 compute_52,sm_52
+     158行 <CodeGeneration>compute_30,sm_30;compute_75,sm_75</CodeGeneration>  改成 compute_52,sm_52
+【3】编译E:\hxgit\yolo3\darknet\build\darknet文件夹下的darknet.sln VS2015 打开。
+     1.调试和生成按钮下面的两个框选【release】【x64】，系统是64位的。根据实际情况选。
+     2.项目->属性->常规  平台工具集 选 Visual Studio 2015（V140）
+     3.项目->属性->VC++目录  包含目录  添加3个  点确定！
+          E:\opencv346\opencv\build\include
+          E:\opencv346\opencv\build\include\opencv
+          E:\opencv346\opencv\build\include\opencv2
+     4.项目->属性->VC++目录 库目录添加1个 E:\opencv346\opencv\build\x64\vc14  注意点确定
+     5.项目->属性->链接器->【常规】 附加库目录  添加 1个 E:\opencv346\opencv\build\x64\vc14\lib  注意点确定
+     6.项目->属性->链接器->【输入】 附加依赖库  添加1个  opencv_world346.lib  或者写绝对路径   注意点确定
+     （如果5.没写的话必须写绝对路径 E:\opencv346\opencv\build\x64\vc14\lib\opencv_world346.lib）
+     7.注意点确定
+     8.选中darnet 右键或者上方点生成->生成解决方案。
+【4】测试是否可用 下载yolov3-tiny.cfg yolov3-tiny.weights  这个是小模型 大的yolo3.weights 238M  似乎要4G 显存 我的只有3G。
+     https://download.csdn.net/download/qq_25832821/10701410   下载。
+     测试命令 
+     E:\hxgit\yolo3\darknet\build\darknet\x64>darknet detect cfg/yolov3-tiny.cfg yolov3-tiny.weights data/dog.jpg
+
+     
+
+参考：
+【1】计算能力
+Model 	Compatibility 	nvcc flag
+GeForce RTX 2070/2080 	7.5 (CUDA 10) 	nvcc_ARCH = -gencode=arch=compute_75,code="sm_75,compute_75"
+Titan V 	7.0 (CUDA 9.1) 	nvcc_ARCH = -gencode=arch=compute_70,code="sm_70,compute_70"
+GeForce GTX 1080 Ti 	6.1 (CUDA 8) 	nvcc_ARCH = -gencode=arch=compute_61,code="sm_61,compute_61"
+GeForce GTX 1080 	6.1 (CUDA 8) 	nvcc_ARCH = -gencode=arch=compute_61,code="sm_61,compute_61"
+GeForce GTX 1070 	6.1 (CUDA 8) 	nvcc_ARCH = -gencode=arch=compute_61,code="sm_61,compute_61"
+GeForce GTX 1060 	6.1 (CUDA 8) 	nvcc_ARCH = -gencode=arch=compute_61,code="sm_61,compute_61"
+Tesla P100 	6.0 (CUDA 8) 	nvcc_ARCH = -gencode=arch=compute_60,code="sm_60,compute_60"
+Tegra X1 	5.3 	nvcc_ARCH = -gencode=arch=compute_53,code="sm_53,compute_53"
+GeForce GTX TITAN X 	5.2 	nvcc_ARCH = -gencode=arch=compute_52,code="sm_52,compute_52"
+GeForce GTX 980 Ti 	5.2 	nvcc_ARCH = -gencode=arch=compute_52,code="sm_52,compute_52"
+GeForce GTX 980 	5.2 	nvcc_ARCH = -gencode=arch=compute_52,code="sm_52,compute_52"
+GeForce GTX 970 	5.2 	nvcc_ARCH = -gencode=arch=compute_52,code="sm_52,compute_52"
+GeForce GTX 960 	5.2 	nvcc_ARCH = -gencode=arch=compute_52,code="sm_52,compute_52"
+GeForce GTX 950 	5.2 	nvcc_ARCH = -gencode=arch=compute_52,code="sm_52,compute_52"
+GeForce GTX 980 	5.2 	nvcc_ARCH = -gencode=arch=compute_52,code="sm_52,compute_52"
+GeForce GTX 980M 	5.2 	nvcc_ARCH = -gencode=arch=compute_52,code="sm_52,compute_52"
+GeForce GTX 970M 	5.2 	nvcc_ARCH = -gencode=arch=compute_52,code="sm_52,compute_52"
+GeForce GTX 965M 	5.2 	nvcc_ARCH = -gencode=arch=compute_52,code="sm_52,compute_52"
+GeForce 920M 	5.2 	nvcc_ARCH = -gencode=arch=compute_52,code="sm_52,compute_52"
+GeForce 910M 	5.2 	nvcc_ARCH = -gencode=arch=compute_52,code="sm_52,compute_52"
+Quadro M6000 	5.2 	nvcc_ARCH = -gencode=arch=compute_52,code="sm_52,compute_52"
+Quadro M5000 	5.2 	nvcc_ARCH = -gencode=arch=compute_52,code="sm_52,compute_52"
+Quadro M4000 	5.2 	nvcc_ARCH = -gencode=arch=compute_52,code="sm_52,compute_52"
+GeForce GTX 750 Ti 	5.0 	nvcc_ARCH = -gencode=arch=compute_50,code="sm_50,compute_50"
+GeForce GTX 750 	5.0 	nvcc_ARCH = -gencode=arch=compute_50,code="sm_50,compute_50"
+GeForce GTX 960M 	5.0 	nvcc_ARCH = -gencode=arch=compute_50,code="sm_50,compute_50"
+GeForce GTX 950M 	5.0 	nvcc_ARCH = -gencode=arch=compute_50,code="sm_50,compute_50"
+GeForce 940M 	5.0 	nvcc_ARCH = -gencode=arch=compute_50,code="sm_50,compute_50"
+GeForce 930M 	5.0 	nvcc_ARCH = -gencode=arch=compute_50,code="sm_50,compute_50"
+GeForce GTX 850M 	5.0 	nvcc_ARCH = -gencode=arch=compute_50,code="sm_50,compute_50"
+GeForce 840M 	5.0 	nvcc_ARCH = -gencode=arch=compute_50,code="sm_50,compute_50"
+GeForce 830M 	5.0 	nvcc_ARCH = -gencode=arch=compute_50,code="sm_50,compute_50"
+Quadro K2200 	5.0 	nvcc_ARCH = -gencode=arch=compute_50,code="sm_50,compute_50"
+Quadro K1200 	5.0 	nvcc_ARCH = -gencode=arch=compute_50,code="sm_50,compute_50"
+Quadro K620 	5.0 	nvcc_ARCH = -gencode=arch=compute_50,code="sm_50,compute_50"
+Quadro K2200M 	5.0 	nvcc_ARCH = -gencode=arch=compute_50,code="sm_50,compute_50"
+Quadro K620M 	5.0 	nvcc_ARCH = -gencode=arch=compute_50,code="sm_50,compute_50"
+Tesla K80 	3.7 	nvcc_ARCH = -gencode=arch=compute_37,code="sm_37,compute_37"
+GeForce GTX TITAN Z 	3.5 	nvcc_ARCH += -gencode=arch=compute_35,code="sm_35,compute_35"
+GeForce GTX TITAN Black 	3.5 	nvcc_ARCH += -gencode=arch=compute_35,code="sm_35,compute_35"
+GeForce GTX TITAN 	3.5 	nvcc_ARCH += -gencode=arch=compute_35,code="sm_35,compute_35"
+GeForce GTX 780 Ti 	3.5 	nvcc_ARCH += -gencode=arch=compute_35,code="sm_35,compute_35"
+GeForce GTX 780 	3.5 	nvcc_ARCH += -gencode=arch=compute_35,code="sm_35,compute_35"
+GeForce GT 730 	3.5 	nvcc_ARCH += -gencode=arch=compute_35,code="sm_35,compute_35"
+GeForce GT 720 	3.5 	nvcc_ARCH += -gencode=arch=compute_35,code="sm_35,compute_35"
+GeForce GT 705* 	3.5 	nvcc_ARCH += -gencode=arch=compute_35,code="sm_35,compute_35"
+GeForce GT 640 (GDDR5) 	3.5 	nvcc_ARCH += -gencode=arch=compute_35,code="sm_35,compute_35"
+Quadro K6000 	3.5 	nvcc_ARCH = -gencode=arch=compute_35,code="sm_35,compute_35"
+Quadro K5200 	3.5 	nvcc_ARCH = -gencode=arch=compute_35,code="sm_35,compute_35"
+Quadro K610M 	3.5 	nvcc_ARCH = -gencode=arch=compute_35,code="sm_35,compute_35"
+Quadro K510M 	3.5 	nvcc_ARCH = -gencode=arch=compute_35,code="sm_35,compute_35"
+Tesla K40 	3.5 	nvcc_ARCH = -gencode=arch=compute_35,code="sm_35,compute_35"
+Tesla K20 	3.5 	nvcc_ARCH = -gencode=arch=compute_35,code="sm_35,compute_35"
+Tegra K1 	3.2 	nvcc_ARCH = -gencode=arch=compute_30,code="sm_32,compute_30"
+Jetson TK1 	3.2 	nvcc_ARCH = -gencode=arch=compute_30,code="sm_32,compute_30"
+GeForce GTX 770 	3.0 	nvcc_ARCH = -gencode=arch=compute_30,code="sm_30,compute_30"
+GeForce GTX 760 	3.0 	nvcc_ARCH = -gencode=arch=compute_30,code="sm_30,compute_30"
