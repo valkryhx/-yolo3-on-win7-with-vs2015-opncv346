@@ -16,7 +16,7 @@
    git config --global --unset https.proxy
 
 【2】下载完成后打开E:\hxgit\yolo3\darknet\build\darknet文件夹下的darknet.vcxproj  这是GPU版本 还有no GPU版本 自己选合适的。 
-     有UltraEdit打开 把里面CUDA 10.0改成自己的CUDA版本 我的是CUDA 8.0
+     有UltraEdit打开 把里面CUDA 10.0改成自己的CUDA版本 我的是CUDA 8.0 【后来升级CUDA10.0 改回来】
      分别是
      55行 <Import Project="$(VCTargetsPath)\BuildCustomizations\CUDA 8.0.props" />
      301行  <Import Project="$(VCTargetsPath)\BuildCustomizations\CUDA 8.0.targets" />
@@ -38,7 +38,7 @@
      7.注意点确定
      8.选中darnet 右键或者上方点生成->生成解决方案。
 【4】测试是否可用 下载yolov3-tiny.cfg yolov3-tiny.weights  这个是小模型 大的yolo3.weights 238M  似乎要4G 显存 我的只有3G。
-     https://download.csdn.net/download/qq_25832821/10701410   下载。
+     https://download.csdn.net/download/qq_25832821/10701410   下载。【大模型在预测时也可以用，即使只有3G显存。训练则不行，太小了。。】
      测试命令 
      E:\hxgit\yolo3\darknet\build\darknet\x64>darknet detect cfg/yolov3-tiny.cfg yolov3-tiny.weights data/dog.jpg
 
